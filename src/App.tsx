@@ -12,7 +12,9 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL; // backend URL
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(() => {
+    return localStorage.getItem("isAdmin") === "true";
+  });
   const [view, setView] = useState("login");
   const [dbStatus, setDbStatus] = useState<{
     connected: boolean;
@@ -55,12 +57,29 @@ function App() {
     localStorage.setItem("token", newToken);
   };
 
+  // const handleLogin = (newToken: string, admin: boolean) => {
+  //   setToken(newToken);
+  //   setIsAdmin(admin);
+  //   localStorage.setItem("token", newToken);
+  //   localStorage.setItem("isAdmin", String(admin));
+  // };
+
+
   const handleLogout = () => {
     setToken(null);
     setIsAdmin(false);
     localStorage.removeItem("token");
     setView("login");
   };
+
+  // const handleLogout = () => {
+  //   setToken(null);
+  //   setIsAdmin(false);
+  //   localStorage.removeItem("token");
+  //   localStorage.removeItem("isAdmin");
+  //   setView("login");
+  // };
+
 
   const renderDbStatus = () => (
     <div
@@ -121,15 +140,13 @@ function App() {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            {isAdmin && (
-              <button
-                onClick={() => setView("admin")}
-                className="flex items-center space-x-1 text-rose-600 hover:text-rose-800 transition-colors duration-200"
-              >
-                <Upload className="w-5 h-5" />
-                <span>Admin Panel</span>
-              </button>
-            )}
+            <button
+              onClick={() => setView("admin")}
+              className="flex items-center space-x-1 text-rose-600 hover:text-rose-800 transition-colors duration-200"
+            >
+              <Upload className="w-5 h-5" />
+              <span>Admin Panel</span>
+            </button>
             <button
               onClick={() => setView("player")}
               className="flex items-center space-x-1 text-rose-600 hover:text-rose-800 transition-colors duration-200"
@@ -149,12 +166,8 @@ function App() {
       </nav>
 
       <main className="container mx-auto py-8 px-4">
-        {view === "admin" && isAdmin ? (
+        {view === "admin"? (
           <AdminPanel token={token} />
-        ) : view === "requests" && isAdmin ? (
-          <AdminSongRequestsPage token={token} />
-        ) : view === "request" ? (
-          <UserSongRequest token={token} />
         ) : (
           <MusicPlayer token={token} />
         )}

@@ -44,6 +44,17 @@ function MusicPlayer({ token }: MusicPlayerProps) {
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (currentSongIndex !== null && audioRef.current) {
+      audioRef.current.load(); // Load the new audio file
+      audioRef.current.play().catch((err) => {
+        console.error("Autoplay failed:", err);
+      });
+      setIsPlaying(true);
+    }
+  }, [currentSongIndex]);
+
+
   const fetchSongs = async () => {
     try {
       setIsSearching(true);
